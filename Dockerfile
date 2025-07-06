@@ -1,13 +1,18 @@
-FROM alpine:3.21.2
+FROM ubuntu:noble
 
 ARG CONTAINER_VERSION="0.0.0"
 
-LABEL Author='Maciej Rachuna'
-LABEL Application='pl.rachuna-net.containers.semantic-release'
-LABEL Description='semantic-release container image'
+LABEL Author="Maciej Rachuna"
+LABEL Application="pl.rachuna-net.containers.vault"
+LABEL Description="vault container image"
 LABEL version="${CONTAINER_VERSION}"
 
-RUN apk add --no-cache \
+ENV DEBIAN_FRONTEND=noninteractive
+
+COPY scripts/ /opt/scripts/
+
+# Install system dependencies and ansible
+RUN apt-get update && apt-get install -y \
         bash \
         curl \
         git \
@@ -15,6 +20,9 @@ RUN apk add --no-cache \
         nodejs \
         npm \    
         openssh-client \
+    && apt-get upgrade -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
     # Install semantic-release
     && npm install -g \
         semantic-release \
@@ -28,3 +36,13 @@ RUN apk add --no-cache \
         @semantic-release/changelog \
         @semantic-release/git \
 
+# Make scripts executable
+    && chmod +x /opt/scripts/*.bash \
+
+# Create a non-root user and set permissions
+    && useradd -m -s /bin/bash semantic_release \
+    && chown -R semantic_release:semantic_release /opt/scripts
+
+USER semantic_release
+
+ENTRYPOINT [ "/opt/scripts/entrypoint.bash" ]
