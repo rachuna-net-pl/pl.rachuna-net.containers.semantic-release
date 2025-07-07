@@ -17,12 +17,13 @@ RUN apt-get update && apt-get install -y \
         curl \
         git \
         jq \
-        nodejs \
         npm \    
         openssh-client \
     && apt-get upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs \
     # Install semantic-release
     && npm install -g \
         semantic-release \
