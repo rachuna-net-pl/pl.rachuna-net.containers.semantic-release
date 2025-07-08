@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-/opt/scripts/gitlab-token.bash
+/opt/scripts/gitlab.bash
 
 /bin/bash
