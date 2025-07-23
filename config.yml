@@ -1,0 +1,57 @@
+---
+base_image: ubuntu:noble
+
+labels:
+  maintainer: "Maciej Rachuna <rachuna.maciej@gmail.com>"
+  description: Kontener z narzędziem Semantic-Release, wykorzystywany w procesach budowania kontenerów w środowisku GitLab CI.
+  version: "1.0.0"
+  image_source: "https://gitlab.com/pl.rachuna-net/containers/buildah"
+
+env:
+  DEBIAN_FRONTEND: noninteractive
+  TF_IN_AUTOMATION: "true"
+  LANG: C.UTF-8
+
+before_build_commands: []
+
+custom_repos: []
+
+packages:
+  - bash
+  - curl
+  - git
+  - jq
+  - npm
+  - openssh-client
+
+extra_commands:
+  - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+  - apt-get install -y nodejs
+  - >
+    npm install -g \
+        semantic-release \
+        @semantic-release/gitlab \
+        @semantic-release/release-notes-generator \
+        @semantic-release/commit-analyzer \
+        conventional-changelog-conventionalcommits@8 \
+        conventional-changelog-angular \
+        @semantic-release/exec \
+        @semantic-release/git \
+        @semantic-release/changelog \
+        @semantic-release/git \
+  - chmod 777 /opt/scripts
+  - chmod 777 /opt/scripts/*
+  - semantic-release --version
+
+copy:
+  - source: scripts/
+    destination: /opt/scripts/
+
+user:
+  name: nonroot
+  shell: /bin/bash
+  home: /home/nonroot
+  chown: /opt/scripts/
+
+entrypoint: "/opt/scripts/entrypoint.bash"
+cmd: "/bin/bash"
