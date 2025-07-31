@@ -38,7 +38,7 @@ extra_commands:
         @semantic-release/exec \
         @semantic-release/git \
         @semantic-release/changelog \
-        @semantic-release/git \
+        @semantic-release/git
   - chmod 777 /opt/scripts
   - chmod 777 /opt/scripts/*
   - semantic-release --version
